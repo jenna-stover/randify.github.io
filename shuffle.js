@@ -12,12 +12,15 @@ if (!code) {
 
 async function shufflePlaylist() {
     // const playlist_id: string = "3obuCNKjWDDp8hs2IicCm0";
+    const messageContainer = document.getElementById("message-container");
     const playlist_id = document.getElementById("name").value;
     const num_songs = 75;
     console.log("User authenticated. Randomizing playlist.")
     const accessToken = await getAccessToken(clientId, code);
     const tracks = await getPlaylistTracks(accessToken, playlist_id);
     randomizeSongs(accessToken, tracks, num_songs);
+
+    messageContainer.innerHTML = "Songs successfully added to queue!";
 }
 
 async function redirectToAuthCodeFlow(clientId) {
@@ -77,7 +80,7 @@ async function getAccessToken(clientId, code) {
     params.append("client_id", clientId);
     params.append("grant_type", "authorization_code");
     params.append("code", code);
-    params.append("redirect_uri", "http://localhost:5173");
+    params.append("redirect_uri", "http://localhost:5500");
     params.append("code_verifier", verifier);
 
     const result = await fetch("https://accounts.spotify.com/api/token", {
