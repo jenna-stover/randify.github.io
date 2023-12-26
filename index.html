@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Randify</title>
+        <link rel="stylesheet" href="styles.css">
+        <script src="script.js"></script>
+    </head>
+    <body>
+        <header id="main-header">
+            <h1>Randify</h1>
+        </header>
+
+        <main id="main-content">
+            <h3 id="description">Select a playlist to produce a completely randomized shuffle! <br>Songs will be added to your queue.</br></h2>
+            <div class="flex-container">
+                    <section class="inner-column">
+                        <h3>Select Your Playlist: </h3>
+                        <form id="add-playlist-form" method="get">
+                            <p>
+                                <label for="name">Playlist Name:</label>
+                                <input type="text" id="name" name="name" required>
+                            </p>
+
+                            <p>
+                                <button id="shuffle-button" type="submit">Shuffle</button>
+                            </p>
+                        
+                        </form>
+                    </section>
+            </div>
+        </main>
+    </body>
+</html>
