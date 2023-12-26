@@ -12,7 +12,7 @@ if (!code) {
 
 async function shufflePlaylist() {
     // const playlist_id: string = "3obuCNKjWDDp8hs2IicCm0";
-    const playlist_field = document.getElementById("name").value;
+    const playlist_id = document.getElementById("name").value;
     const num_songs = 75;
     console.log("User authenticated. Randomizing playlist.")
     const accessToken = await getAccessToken(clientId, code);
@@ -31,7 +31,7 @@ async function redirectToAuthCodeFlow(clientId) {
     const params = new URLSearchParams();
     params.append("client_id", clientId);
     params.append("response_type", "code");
-    params.append("redirect_uri", "http://localhost:5173");
+    params.append("redirect_uri", "http://localhost:5500");
     params.append("scope", "app-remote-control playlist-read-private user-read-private user-modify-playback-state");
     params.append("code_challenge_method", "S256");
     params.append("code_challenge", challenge);
@@ -184,5 +184,5 @@ async function getPlaylistTracks(token, playlist_id) {
 }
 
 window.onload = () => {
-    document.getElementById("add-playlist-form").onsubmit = shufflePlaylist;
+    document.getElementById("shuffle-button").onclick = shufflePlaylist;
 }
