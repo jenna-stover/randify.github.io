@@ -2,25 +2,32 @@
 const clientId = "614e51c74d164d949a5c609e1330a6be";
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
+let accessToken;
 
 /* If user has not authenticated, have them do Spotify login */
 if (!code) {
     console.log("Authenticating user Spotify account.");
     redirectToAuthCodeFlow(clientId);
 /* If user has authenticated, randomize Spotify playlist */
-} 
+} else {
+    storeToken();
+}
+
+async function storeToken()
+{
+    accessToken = await getAccessToken(clientId, code);
+}
 
 async function shufflePlaylist() {
     // const playlist_id: string = "3obuCNKjWDDp8hs2IicCm0";
-    const messageContainer = document.getElementById("message-container");
-    const playlist_id = document.getElementById("name").value;
-    const num_songs = 75;
-    console.log("User authenticated. Randomizing playlist.")
-    const accessToken = await getAccessToken(clientId, code);
-    const tracks = await getPlaylistTracks(accessToken, playlist_id);
-    randomizeSongs(accessToken, tracks, num_songs);
-
-    messageContainer.innerHTML = "Songs successfully added to queue!";
+    if(accessToken) 
+    {
+        const playlist_id = document.getElementById("name").value;
+        const num_songs = 75;
+        console.log("User authenticated. Randomizing playlist.")
+        const tracks = await getPlaylistTracks(accessToken, playlist_id);
+        randomizeSongs(accessToken, tracks, num_songs);
+    }
 }
 
 async function redirectToAuthCodeFlow(clientId) {
