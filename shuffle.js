@@ -8,8 +8,11 @@ if (!code) {
     console.log("Authenticating user Spotify account.");
     redirectToAuthCodeFlow(clientId);
 /* If user has authenticated, randomize Spotify playlist */
-} else {
-    const playlist_id: string = "3obuCNKjWDDp8hs2IicCm0";
+} 
+
+async function shufflePlaylist() {
+    // const playlist_id: string = "3obuCNKjWDDp8hs2IicCm0";
+    const playlist_field = document.getElementById("name").value;
     const num_songs = 75;
     console.log("User authenticated. Randomizing playlist.")
     const accessToken = await getAccessToken(clientId, code);
@@ -17,7 +20,7 @@ if (!code) {
     randomizeSongs(accessToken, tracks, num_songs);
 }
 
-export async function redirectToAuthCodeFlow(clientId: string) {
+async function redirectToAuthCodeFlow(clientId) {
     /** Have user go through Spotify authorization to obtain code. */
     const verifier = generateCodeVerifier(128);
     const challenge = await generateCodeChallenge(verifier);
@@ -36,7 +39,7 @@ export async function redirectToAuthCodeFlow(clientId: string) {
     document.location = `https://accounts.spotify.com/authorize?${params.toString()}`;
 }
 
-function generateCodeVerifier(length: number) {
+function generateCodeVerifier(length) {
     /** Authenticate user using Spotify PKCE method */
     let text = '';
     let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -47,7 +50,7 @@ function generateCodeVerifier(length: number) {
     return text;
 }
 
-async function generateCodeChallenge(codeVerifier: string) {
+async function generateCodeChallenge(codeVerifier) {
     /** Authenticate user using Spotify PKCE method with SHA-256 hashing */
     const data = new TextEncoder().encode(codeVerifier);
     const digest = await window.crypto.subtle.digest('SHA-256', data);
@@ -57,7 +60,7 @@ async function generateCodeChallenge(codeVerifier: string) {
         .replace(/=+$/, '');
 }
 
-async function getAccessToken(clientId: string, code: string): Promise<string> {
+async function getAccessToken(clientId, code) {
     /** Get access token to be used for all Spotify API requests.
      * 
      * Args:
@@ -75,7 +78,7 @@ async function getAccessToken(clientId: string, code: string): Promise<string> {
     params.append("grant_type", "authorization_code");
     params.append("code", code);
     params.append("redirect_uri", "http://localhost:5173");
-    params.append("code_verifier", verifier!);
+    params.append("code_verifier", verifier);
 
     const result = await fetch("https://accounts.spotify.com/api/token", {
         method: "POST",
@@ -87,7 +90,7 @@ async function getAccessToken(clientId: string, code: string): Promise<string> {
     return access_token;
 }
 
-async function randomizeSongs(token: string, tracks: string[], num_songs: number) {
+async function randomizeSongs(token, tracks, num_songs) {
     /* Randomly select songs from playlist and add to current Spotify queue.
     
     Args:
@@ -136,7 +139,7 @@ async function randomizeSongs(token: string, tracks: string[], num_songs: number
     console.log(`Added ${num_songs} songs to queue.`)
 }
 
-async function getPlaylistTracks(token: string, playlist_id: string): Promise<string[]> {
+async function getPlaylistTracks(token, playlist_id) {
     /* Get all tracks in a given Spotify playlist.
     
     Args:
@@ -152,7 +155,7 @@ async function getPlaylistTracks(token: string, playlist_id: string): Promise<st
     let request_url = `${url}/${playlist_id}/tracks`;
     
     // tracks holds the Spotify ID of tracks
-    let tracks: string[] = [];
+    let tracks = [];
 
     while(request_url) {
         try {
@@ -165,7 +168,7 @@ async function getPlaylistTracks(token: string, playlist_id: string): Promise<st
                 throw new Error(`Failed to get user playlist. ${result.status} ${result.statusText}`);
             }
 
-            const data: PlaylistTracks = await result.json();
+            const data = await result.json();
             // tracks.extend([track['track']['id'] for track in data['items']])
             tracks = tracks.concat(data.items.map(song => song.track.id));
 
@@ -178,4 +181,8 @@ async function getPlaylistTracks(token: string, playlist_id: string): Promise<st
     }
         
     return tracks;
+}
+
+window.onload = () => {
+    document.getElementById("add-playlist-form").onsubmit = shufflePlaylist;
 }
